@@ -1,12 +1,20 @@
+const path = require('path');
+// eslint-disable-next-line no-unused-vars
 const router = require('express').Router();
-const {
-  getCards, createCard, deleteCard, likeCard, dislikeCard,
-} = require('../controllers/cards');
+// eslint-disable-next-line no-unused-vars
+const fs = require('fs').promises;
 
-router.get('/', getCards);
-router.post('/', createCard);
-router.delete('/:cardId', deleteCard);
-router.put('/:cardId/likes', likeCard);
-router.delete('/:cardId/likes', dislikeCard);
+// eslint-disable-next-line no-unused-vars
+const cards = path.join(__dirname, '../data/cards.json');
+
+router.get('/', (req, res) => {
+  fs.readFile(cards, { encoding: 'utf8' })
+    .then((data) => {
+      res.send(JSON.parse(data));
+    })
+    .catch((err) => {
+      res.status(500).send(err.message);
+    });
+});
 
 module.exports = router;
