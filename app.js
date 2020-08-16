@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -40,4 +41,3 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Порт: ${PORT}`);
 });
-

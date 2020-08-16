@@ -1,4 +1,5 @@
 const User = require('../models/user');
+// eslint-disable-next-line no-unused-vars
 const { validationError } = require('./validationError');
 
 module.exports.getUsers = (req, res) => {
@@ -11,11 +12,16 @@ module.exports.getUserId = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail(() => {
-      res.status(404).send({ message: 'Нет пользователя с таким id!' });
-    })
+    .orFail()
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404);
+      } else {
+        res.status(500);
+      }
+      res.send({ message: err.message });
+    });
 };
 
 module.exports.createUser = (req, res) => {
@@ -23,7 +29,14 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => validationError(err, req, res));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400);
+      } else {
+        res.status(500);
+      }
+      res.send({ message: err.message });
+    });
 };
 
 module.exports.updateUser = (req, res) => {
@@ -35,11 +48,18 @@ module.exports.updateUser = (req, res) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .orFail(() => {
-      res.status(404).send({ message: 'Пользователь не обновлен! :(' });
-    })
+    .orFail()
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404);
+      } if (err.name === 'ValidationError') {
+        res.status(400);
+      } else {
+        res.status(500);
+      }
+      res.send({ message: err.message });
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -51,9 +71,16 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     { new: true, runValidators: true },
   )
-    .orFail(() => {
-      res.status(404).send({ message: 'Аватарка не обновлена! :(' });
-    })
+    .orFail()
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404);
+      } if (err.name === 'ValidationError') {
+        res.status(400);
+      } else {
+        res.status(500);
+      }
+      res.send({ message: err.message });
+    });
 };
