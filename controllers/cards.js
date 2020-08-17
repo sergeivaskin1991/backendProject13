@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { validationError } = require('./validationError');
+// const { validationError } = require('./validationError');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -19,7 +19,7 @@ module.exports.createCard = (req, res) => {
       } else {
         res.status(500);
       }
-        res.send({ message: err.message });
+      res.send({ message: err.message });
     });
 };
 
